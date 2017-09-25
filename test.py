@@ -11,6 +11,9 @@ import tensorflow as tf
 # https://medium.com/@waleedka/traffic-sign-recognition-with-tensorflow-629dffc391a6
 # https://github.com/waleedka/traffic-signs-tensorflow/blob/master/notebook1.ipynb
 
+dir_path = os.path.dirname(os.path.realpath(__file__))
+
+
 def load_data(data_dir):
     """Loads a data set and returns two lists:
 
@@ -37,8 +40,7 @@ def load_data(data_dir):
 
 
 # Load testing datasets.
-ROOT_PATH = "/traffic"
-test_data_dir = os.path.join(ROOT_PATH, "datasets/Germany/Testing")
+test_data_dir = os.path.join(dir_path, "datasets/Germany/Testing")
 
 tf.reset_default_graph()
 
@@ -58,7 +60,7 @@ saver = tf.train.Saver()
 # do some work with the model.
 with tf.Session() as sess:
     # Restore variables from disk.
-    saver.restore(sess, "/tmp/model.ckpt")
+    saver.restore(sess, dir_path+"/temp/model.ckpt")
     print("Model restored.")
     # Check the values of the variables
     print("v1 : %s" % v1.eval())

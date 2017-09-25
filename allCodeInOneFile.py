@@ -139,12 +139,11 @@ session = tf.Session(graph=graph)
 # First step is always to initialize all variables.
 # We don't care about the return value, though. It's None.
 _ = session.run([init])
-with tf.device("/gpu:0"):
-    for i in range(201):
-        _, loss_value = session.run([train, loss],
-                                    feed_dict={images_ph: images_a, labels_ph: labels_a})
-        if i % 10 == 0:
-            print("Loss: ", loss_value)
+for i in range(201):
+    _, loss_value = session.run([train, loss],
+                                feed_dict={images_ph: images_a, labels_ph: labels_a})
+    if i % 10 == 0:
+        print("Loss: ", loss_value)
 
 # Pick 10 random images
 sample_indexes = random.sample(range(len(images32)), 10)
