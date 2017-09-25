@@ -9,7 +9,7 @@ import tensorflow as tf
 
 
 # https://medium.com/@waleedka/traffic-sign-recognition-with-tensorflow-629dffc391a6
-
+# https://github.com/waleedka/traffic-signs-tensorflow/blob/master/notebook1.ipynb
 
 def load_data(data_dir):
     """Loads a data set and returns two lists:
