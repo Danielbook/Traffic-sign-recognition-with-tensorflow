@@ -7,11 +7,15 @@ import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
 
-
 # https://medium.com/@waleedka/traffic-sign-recognition-with-tensorflow-629dffc391a6
 # https://github.com/waleedka/traffic-signs-tensorflow/blob/master/notebook1.ipynb
 
-dir_path = os.path.dirname(os.path.realpath(__file__))
+DIR_PATH = os.path.dirname(os.path.realpath(__file__))
+
+# Load testing datasets.
+TEST_DATA_DIR = os.path.join(DIR_PATH, 'datasets/BelgiumTS/Testing')
+MODEL_PATH = os.path.join(DIR_PATH, 'temp/model-1000.meta')
+IMG_SIZE = 32
 
 
 def load_data(data_dir):
@@ -39,121 +43,37 @@ def load_data(data_dir):
     return images, labels
 
 
-# Load testing datasets.
-test_data_dir = os.path.join(dir_path, "datasets/Germany/Testing")
+# Load the test dataset.
+test_images, test_labels = load_data(TEST_DATA_DIR)
 
-tf.reset_default_graph()
+print("Test images loaded")
 
-# images32 = tf.get_variable("images32", shape=[len(images)])
-v1 = tf.get_variable("v1", shape=[3])
+# Transform the images, just like we did with the training set.
+test_images32 = [skimage.transform.resize(image, (IMG_SIZE, IMG_SIZE))
+                 for image in test_images]
 
-# display_images_and_labels(images32, labels)
 print("Images resized")
 
-# labels_a = np.array(labels)
-# images_a = np.array(images32)
-
 # Add ops to save and restore all the variables.
-saver = tf.train.Saver()
+new_saver = tf.train.import_meta_graph(MODEL_PATH)
 
 # Later, launch the model, use the saver to restore variables from disk, and
 # do some work with the model.
 with tf.Session() as sess:
     # Restore variables from disk.
-    saver.restore(sess, dir_path+"/temp/model.ckpt")
+    new_saver.restore(sess, tf.train.latest_checkpoint(DIR_PATH+'/temp/'))
+    # saver.restore(sess, MODEL_PATH)
     print("Model restored.")
-    # Check the values of the variables
-    print("v1 : %s" % v1.eval())
+    graph = tf.get_default_graph()
+    predicted_labels = graph.get_tensor_by_name('predicted_labels:0')
+    images_ph = graph.get_tensor_by_name('images_ph:0')
+
+    # Run predictions against the full test set.
+    predicted = sess.run([predicted_labels],
+                         feed_dict={images_ph: test_images32})[0]
+
+    # Calculate how many matches we got.
+    match_count = sum([int(y == y_) for y, y_ in zip(test_labels, predicted)])
+    accuracy = match_count / len(test_labels)
+    print("Accuracy: {:.3f}".format(accuracy))
     sess.close()
-
-# print("labels: ", labels_a.shape, "\nimages: ", images_a.shape)
-
-# Create a graph to hold the model.
-# graph = tf.Graph()
-
-# Create model in the graph.
-# with graph.as_default():
-#     # Placeholders for inputs and labels.
-#     images_ph = tf.placeholder(tf.float32, [None, 32, 32, 3])
-#     labels_ph = tf.placeholder(tf.int32, [None])
-#
-#     # Flatten input from: [None, height, width, channels]
-#     # To: [None, height * width * channels] == [None, 3072]
-#     images_flat = tf.contrib.layers.flatten(images_ph)
-#
-#     # Fully connected layer.
-#     # Generates logits of size [None, 62]
-#     logits = tf.contrib.layers.fully_connected(images_flat, 62, tf.nn.relu)
-#
-#     # Convert logits to label indexes (int).
-#     # Shape [None], which is a 1D vector of length == batch_size.
-#     predicted_labels = tf.argmax(logits, 1)
-#
-#     # Define the loss function.
-#     # Cross-entropy is a good choice for classification.
-#     loss = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(logits=logits, labels=labels_ph))
-#
-#     # Create training op.
-#     train = tf.train.AdamOptimizer(learning_rate=0.001).minimize(loss)
-#
-#     # And, finally, an initialization op to execute before training.
-#     init = tf.global_variables_initializer()
-#
-# # print("images_flat: ", images_flat)
-# # print("logits: ", logits)
-# # print("loss: ", loss)
-# # print("predicted_labels: ", predicted_labels)
-# print("Graph created")
-#
-# # Create a session to run the graph we created.
-# session = tf.Session(graph=graph)
-#
-# # First step is always to initialize all variables.
-# # We don't care about the return value, though. It's None.
-# _ = session.run([init])
-# with tf.device("/gpu:0"):
-#     for i in range(201):
-#         _, loss_value = session.run([train, loss],
-#                                     feed_dict={images_ph: images_a, labels_ph: labels_a})
-#         if i % 10 == 0:
-#             print("Loss: ", loss_value)
-
-# Pick 10 random images
-# sample_indexes = random.sample(range(len(images32)), 10)
-# sample_images = [images32[i] for i in sample_indexes]
-# sample_labels = [labels[i] for i in sample_indexes]
-#
-# # Run the "predicted_labels" op.
-# predicted = session.run([predicted_labels],
-#                         feed_dict={images_ph: sample_images})[0]
-# print(sample_labels)
-# print(predicted)
-#
-# # Display the predictions and the ground truth visually.
-# fig = plt.figure(figsize=(10, 10))
-# for i in range(len(sample_images)):
-#     truth = sample_labels[i]
-#     prediction = predicted[i]
-#     plt.subplot(5, 2, 1 + i)
-#     plt.axis('off')
-#     color = 'green' if truth == prediction else 'red'
-#     plt.text(40, 10, "Truth:        {0}\nPrediction: {1}".format(truth, prediction),
-#              fontsize=12, color=color)
-#     plt.imshow(sample_images[i])
-# plt.show()
-
-# Load the test dataset.
-# test_images, test_labels = load_data(test_data_dir)
-#
-# # Transform the images, just like we did with the training set.
-# test_images32 = [skimage.transform.resize(image, (32, 32))
-#                  for image in test_images]
-# display_images_and_labels(test_images32, test_labels)
-
-# Run predictions against the full test set.
-# predicted = session.run([predicted_labels],
-#                         feed_dict={images_ph: test_images32})[0]
-# # Calculate how many matches we got.
-# match_count = sum([int(y == y_) for y, y_ in zip(test_labels, predicted)])
-# accuracy = match_count / len(test_labels)
-# print("Accuracy: {:.3f}".format(accuracy))
