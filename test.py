@@ -9,12 +9,14 @@ import tensorflow as tf
 
 # https://medium.com/@waleedka/traffic-sign-recognition-with-tensorflow-629dffc391a6
 # https://github.com/waleedka/traffic-signs-tensorflow/blob/master/notebook1.ipynb
+# http://cv-tricks.com/tensorflow-tutorial/save-restore-tensorflow-models-quick-complete-tutorial/
 
 DIR_PATH = os.path.dirname(os.path.realpath(__file__))
 
 # Load testing datasets.
-TEST_DATA_DIR = os.path.join(DIR_PATH, 'datasets/BelgiumTS/Testing')
-MODEL_PATH = os.path.join(DIR_PATH, 'temp/model-1000.meta')
+# TEST_DATA_DIR = os.path.join(DIR_PATH, 'datasets/BelgiumTS/Testing')
+TEST_DATA_DIR = os.path.join(DIR_PATH, 'datasets/Germany/Testing')
+MODEL_PATH = os.path.join(DIR_PATH, 'temp/model.meta')
 IMG_SIZE = 32
 
 

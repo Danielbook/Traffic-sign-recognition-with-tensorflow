@@ -36,13 +36,10 @@ def load_data(data_dir):
             labels.append(int(d))
     return images, labels
 
-
 # Load training and testing datasets.
-# TRAIN_DATA_DIR = os.path.join(dir_path, "datasets/Germany/Training")
-# TEST_DATA_DIR = os.path.join(dir_path, "datasets/Germany/Testing")
+TRAIN_DATA_DIR = os.path.join(dir_path, "datasets/Germany/Training")
+# TRAIN_DATA_DIR = os.path.join(dir_path, 'datasets/BelgiumTS/Training')
 
-TRAIN_DATA_DIR = os.path.join(dir_path, 'datasets/BelgiumTS/Training')
-TEST_DATA_DIR = os.path.join(dir_path, 'datasets/BelgiumTS/Testing')
 MODEL_PATH = os.path.join(dir_path, 'temp/model')
 IMG_SIZE = 32
 
@@ -113,7 +110,7 @@ with tf.Session(graph=graph) as sess:
             print("Loss: ", loss_value)
 
     # Save the variables to disk.
-    SAVE_PATH = saver.save(sess, MODEL_PATH, global_step=1000)
+    SAVE_PATH = saver.save(sess, MODEL_PATH)
     print("Model saved in file: %s" % SAVE_PATH)
 
     sess.close()
