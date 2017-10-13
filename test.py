@@ -2,9 +2,7 @@ import os
 import random
 import skimage.data
 import skimage.transform
-import matplotlib
 import matplotlib.pyplot as plt
-import numpy as np
 import tensorflow as tf
 
 # https://medium.com/@waleedka/traffic-sign-recognition-with-tensorflow-629dffc391a6
@@ -14,8 +12,9 @@ import tensorflow as tf
 DIR_PATH = os.path.dirname(os.path.realpath(__file__))
 
 # Load testing datasets.
-# TEST_DATA_DIR = os.path.join(DIR_PATH, 'datasets/BelgiumTS/Testing')
-TEST_DATA_DIR = os.path.join(DIR_PATH, 'datasets/Germany/Testing')
+TEST_DATA_DIR = os.path.join(DIR_PATH, 'datasets/BelgiumTS/Testing')
+TRAIN_DATA_DIR = os.path.join(DIR_PATH, 'datasets/BelgiumTS/Training')
+# TEST_DATA_DIR = os.path.join(DIR_PATH, 'datasets/Germany/Testing')
 MODEL_PATH = os.path.join(DIR_PATH, 'temp/model.meta')
 IMG_SIZE = 32
 
@@ -45,8 +44,23 @@ def load_data(data_dir):
     return images, labels
 
 
+# Load training dataset.
+images, labels = load_data(TRAIN_DATA_DIR)
+
+print("Unique Labels: {0}\nTotal Images: {1}".format(len(set(labels)), len(images)))
+
+print("Images read")
+
+# Resize images
+images32 = [skimage.transform.resize(image, (IMG_SIZE, IMG_SIZE))
+            for image in images]
+
+print("Images resized")
+
 # Load the test dataset.
 test_images, test_labels = load_data(TEST_DATA_DIR)
+
+print("Unique Labels: {0}\nTotal Images: {1}".format(len(set(test_labels)), len(test_images)))
 
 print("Test images loaded")
 
@@ -63,12 +77,36 @@ new_saver = tf.train.import_meta_graph(MODEL_PATH)
 # do some work with the model.
 with tf.Session() as sess:
     # Restore variables from disk.
-    new_saver.restore(sess, tf.train.latest_checkpoint(DIR_PATH+'/temp/'))
+    new_saver.restore(sess, tf.train.latest_checkpoint(DIR_PATH + '/temp/'))
     # saver.restore(sess, MODEL_PATH)
     print("Model restored.")
     graph = tf.get_default_graph()
     predicted_labels = graph.get_tensor_by_name('predicted_labels:0')
     images_ph = graph.get_tensor_by_name('images_ph:0')
+
+    # Pick 10 random images
+    sample_indexes = random.sample(range(len(images32)), 10)
+    sample_images = [images32[i] for i in sample_indexes]
+    sample_labels = [labels[i] for i in sample_indexes]
+
+    # Run the "predicted_labels" op.
+    predicted = sess.run([predicted_labels],
+                         feed_dict={images_ph: sample_images})[0]
+    print(sample_labels)
+    print(predicted)
+
+    # Display the predictions and the ground truth visually.
+    fig = plt.figure(figsize=(10, 10))
+    for i in range(len(sample_images)):
+        truth = sample_labels[i]
+        prediction = predicted[i]
+        plt.subplot(5, 2, 1 + i)
+        plt.axis('off')
+        color = 'green' if truth == prediction else 'red'
+        plt.text(40, 10, "Truth:        {0}\nPrediction: {1}".format(truth, prediction),
+                 fontsize=12, color=color)
+        plt.imshow(sample_images[i])
+    plt.show()
 
     # Run predictions against the full test set.
     predicted = sess.run([predicted_labels],
