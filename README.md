@@ -1,5 +1,5 @@
-# TNM095_Project
+# Project for the course TNM095 at LiU
 
-Use dataset provided [here](http://benchmark.ini.rub.de/?section=gtsrb&subsection=dataset) and put it in project folder.
+Use dataset provided [here](http://btsd.ethz.ch/shareddata/) and put it in project folder.
 
-Put the training set in `datasets/Germany/Training` and test set in `datasets/Germany/Training`
+Put the training set in `datasets/BelgiumTS/Training` and test set in `datasets/BelgiumTS/Training`
