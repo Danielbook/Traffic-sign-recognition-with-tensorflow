@@ -5,10 +5,6 @@ import skimage.transform
 import matplotlib.pyplot as plt
 import tensorflow as tf
 
-# https://medium.com/@waleedka/traffic-sign-recognition-with-tensorflow-629dffc391a6
-# https://github.com/waleedka/traffic-signs-tensorflow/blob/master/notebook1.ipynb
-# http://cv-tricks.com/tensorflow-tutorial/save-restore-tensorflow-models-quick-complete-tutorial/
-
 DIR_PATH = os.path.dirname(os.path.realpath(__file__))
 
 # Load testing datasets.

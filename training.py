@@ -8,10 +8,7 @@ import time
 import numpy as np
 import tensorflow as tf
 
-# https://medium.com/@waleedka/traffic-sign-recognition-with-tensorflow-629dffc391a6
-
 dir_path = os.path.dirname(os.path.realpath(__file__))
-
 
 def load_data(data_dir):
     """Loads a data set and returns two lists:
@@ -38,7 +35,6 @@ def load_data(data_dir):
     return images, labels
 
 # Load training and testing datasets.
-# TRAIN_DATA_DIR = os.path.join(dir_path, "datasets/Germany/Training")
 TRAIN_DATA_DIR = os.path.join(dir_path, 'datasets/BelgiumTS/Training')
 
 MODEL_PATH = os.path.join(dir_path, 'temp/model')
